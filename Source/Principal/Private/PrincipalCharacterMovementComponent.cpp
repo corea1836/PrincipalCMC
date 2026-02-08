@@ -52,3 +52,28 @@ void UPrincipalCharacterMovementComponent::FSavedMove_Principal::Clear()
 UPrincipalCharacterMovementComponent::UPrincipalCharacterMovementComponent()
 {
 }
+
+UPrincipalCharacterMovementComponent::FNetworkPredictionData_Client_Principal::FNetworkPredictionData_Client_Principal(
+	const UCharacterMovementComponent& ClientMovement) : Super(ClientMovement)
+{
+}
+
+FSavedMovePtr UPrincipalCharacterMovementComponent::FNetworkPredictionData_Client_Principal::AllocateNewMove()
+{
+	return FSavedMovePtr(new FSavedMove_Principal());
+}
+
+FNetworkPredictionData_Client* UPrincipalCharacterMovementComponent::GetPredictionData_Client() const
+{
+	check(PawnOwner != nullptr);
+	
+	if (ClientPredictionData == nullptr)
+	{
+		UPrincipalCharacterMovementComponent* MutableThis = const_cast<UPrincipalCharacterMovementComponent*>(this);
+		
+		MutableThis->ClientPredictionData = new FNetworkPredictionData_Client_Principal(*this);
+		MutableThis->ClientPredictionData->MaxClientSmoothingDeltaTime = 92.f;
+		MutableThis->ClientPredictionData->NoSmoothNetUpdateDist = 140.f;
+	}
+	return ClientPredictionData;
+}

@@ -34,7 +34,20 @@ class PRINCIPAL_API UPrincipalCharacterMovementComponent : public UCharacterMove
 		virtual void Clear() override;		
 	};
 	
+	class FNetworkPredictionData_Client_Principal : public FNetworkPredictionData_Client_Character
+	{
+	public:
+		FNetworkPredictionData_Client_Principal(const UCharacterMovementComponent& ClientMovement);
+		
+		typedef FNetworkPredictionData_Client_Character Super;
+		
+		virtual FSavedMovePtr AllocateNewMove() override;
+	};
+	
 	bool Safe_bWantsToSprint;
+	
+public:
+	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 public:
 	UPrincipalCharacterMovementComponent();
 };
