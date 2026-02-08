@@ -44,10 +44,20 @@ class PRINCIPAL_API UPrincipalCharacterMovementComponent : public UCharacterMove
 		virtual FSavedMovePtr AllocateNewMove() override;
 	};
 	
+	UPROPERTY(EditDefaultsOnly) float Sprint_MaxWalkSpeed;
+	UPROPERTY(EditDefaultsOnly) float Walk_MaxWalkSpeed;
+	
 	bool Safe_bWantsToSprint;
 	
 public:
-	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
-public:
 	UPrincipalCharacterMovementComponent();
+public:
+	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
+	
+protected:
+	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
+public:
+	UFUNCTION(BlueprintCallable) void SprintPressed();
+	UFUNCTION(BlueprintCallable) void SprintReleased();
 };
