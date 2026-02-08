@@ -22,6 +22,9 @@ UCLASS(abstract)
 class APrincipalCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement") class UPrincipalCharacterMovementComponent* PrincipalCharacterMovementComponent;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
@@ -52,7 +55,7 @@ protected:
 public:
 
 	/** Constructor */
-	APrincipalCharacter();	
+	APrincipalCharacter(const FObjectInitializer& ObjectInitializer);	
 
 protected:
 
