@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "PrincipalCharacter.h"
+#include "Public/PrincipalCharacter.h"
+
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,10 +11,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Principal.h"
+#include "Public/PrincipalCharacterMovementComponent.h"
 
-APrincipalCharacter::APrincipalCharacter()
+APrincipalCharacter::APrincipalCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPrincipalCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+	
+	PrincipalCharacterMovementComponent = Cast<UPrincipalCharacterMovementComponent>(GetCharacterMovement());
+	
+	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
