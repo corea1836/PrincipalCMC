@@ -3,13 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PrincipalCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/Object.h"
 #include "PrincipalCharacterMovementComponent.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum ECustomMovementMode
+{
+	CMOVE_None UMETA(Hidden),
+	CMOVE_Slide UMETA(DisplayName = "Slide"),
+	CMOVE_MAX UMETA(Hidden),
+	
+};
 UCLASS()
 class PRINCIPAL_API UPrincipalCharacterMovementComponent : public UCharacterMovementComponent
 {
@@ -21,6 +27,8 @@ class PRINCIPAL_API UPrincipalCharacterMovementComponent : public UCharacterMove
 		
 		// 데이터 저장 변수
 		uint8 Saved_bWantsToSprint:1;
+		
+		uint8 Saved_bPrevWantsToCrouch:1;
 		
 		// 1. 기록 : 현재 캐릭터 상태를 SavedMove_Principal 에 기록
 		virtual void SetMoveFor(ACharacter* C, float InDeltaTime, FVector const& NewAccel, class FNetworkPredictionData_Client_Character& ClientData) override;
@@ -44,22 +52,51 @@ class PRINCIPAL_API UPrincipalCharacterMovementComponent : public UCharacterMove
 		virtual FSavedMovePtr AllocateNewMove() override;
 	};
 	
+	// Parameters
 	UPROPERTY(EditDefaultsOnly) float Sprint_MaxWalkSpeed;
 	UPROPERTY(EditDefaultsOnly) float Walk_MaxWalkSpeed;
 	
+	UPROPERTY(EditDefaultsOnly) float Slide_MinSpeed = 350;
+	UPROPERTY(EditDefaultsOnly) float Slide_EmterImpulse = 500;
+	UPROPERTY(EditDefaultsOnly) float Slide_GravityForce = 5000;
+	UPROPERTY(EditDefaultsOnly) float Slide_Fraction = 1.3;
+	
+	// Transient
+	UPROPERTY(Transient) APrincipalCharacter* PrincipalCharacterOwner;
+	
 	bool Safe_bWantsToSprint;
+	bool Safe_bPrevWantsToCrouch;
 	
 public:
 	UPrincipalCharacterMovementComponent();
+	
+protected:
+	virtual void InitializeComponent() override;
+	
 public:
 	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
-	
+		
+	virtual bool IsMovingOnGround() const override;
+	virtual bool CanCrouchInCurrentState() const override;
 protected:
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
+	
+	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
+	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+	
+private:
+	void EnterSlide();
+	void ExitSlide();
+	void PhysSlide(float deltaTime, int32 Iterations);
+	bool GetSlideSurface(FHitResult& Hit) const;
+	
 public:
 	UFUNCTION(BlueprintCallable) void SprintPressed();
 	UFUNCTION(BlueprintCallable) void SprintReleased();
 	
 	UFUNCTION(BlueprintCallable) void CrouchPressed();
+	
+	UFUNCTION(BlueprintPure) bool IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const;
 };
+
