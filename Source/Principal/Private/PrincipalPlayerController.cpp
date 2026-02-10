@@ -1,12 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 
-#include "PrincipalPlayerController.h"
+
+#include "Public/PrincipalPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
-#include "Principal.h"
+#include "Public/Principal.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
 void APrincipalPlayerController::BeginPlay()
