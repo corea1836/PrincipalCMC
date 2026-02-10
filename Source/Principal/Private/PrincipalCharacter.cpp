@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Public/Principal.h"
 #include "Public/PrincipalCharacterMovementComponent.h"
 
 APrincipalCharacter::APrincipalCharacter(const FObjectInitializer& ObjectInitializer)

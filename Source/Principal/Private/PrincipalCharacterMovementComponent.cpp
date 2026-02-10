@@ -1,6 +1,7 @@
 #include "Public/PrincipalCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 
+#pragma region Saved Move
 void UPrincipalCharacterMovementComponent::FSavedMove_Principal::SetMoveFor(ACharacter* C, float InDeltaTime,
 	FVector const& NewAccel, class FNetworkPredictionData_Client_Character& ClientData)
 {
@@ -42,6 +43,8 @@ void UPrincipalCharacterMovementComponent::FSavedMove_Principal::PrepMoveFor(ACh
 	CharacterMovement->Safe_bWantsToSprint = Saved_bWantsToSprint;
 }
 
+#pragma endregion
+
 void UPrincipalCharacterMovementComponent::FSavedMove_Principal::Clear()
 {
 	FSavedMove_Character::Clear();
@@ -49,18 +52,25 @@ void UPrincipalCharacterMovementComponent::FSavedMove_Principal::Clear()
 	Saved_bWantsToSprint = 0;
 }
 
-UPrincipalCharacterMovementComponent::UPrincipalCharacterMovementComponent()
-{
-}
-
 UPrincipalCharacterMovementComponent::FNetworkPredictionData_Client_Principal::FNetworkPredictionData_Client_Principal(
 	const UCharacterMovementComponent& ClientMovement) : Super(ClientMovement)
 {
 }
 
+#pragma region Client Network Predication Data
+
 FSavedMovePtr UPrincipalCharacterMovementComponent::FNetworkPredictionData_Client_Principal::AllocateNewMove()
 {
 	return FSavedMovePtr(new FSavedMove_Principal());
+}
+
+#pragma endregion
+
+#pragma region CMC
+
+UPrincipalCharacterMovementComponent::UPrincipalCharacterMovementComponent()
+{
+	NavAgentProps.bCanCrouch = true;	
 }
 
 FNetworkPredictionData_Client* UPrincipalCharacterMovementComponent::GetPredictionData_Client() const
@@ -85,8 +95,7 @@ void UPrincipalCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags
 	Safe_bWantsToSprint = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
 }
 
-void UPrincipalCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation,
-	const FVector& OldVelocity)
+void UPrincipalCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity)
 {
 	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
 	
@@ -103,6 +112,10 @@ void UPrincipalCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds,
 	}
 }
 
+#pragma endregion
+
+#pragma region Input
+
 void UPrincipalCharacterMovementComponent::SprintPressed()
 {
 	Safe_bWantsToSprint = true;
@@ -112,3 +125,10 @@ void UPrincipalCharacterMovementComponent::SprintReleased()
 {
 	Safe_bWantsToSprint = false;
 }
+
+void UPrincipalCharacterMovementComponent::CrouchPressed()
+{
+	bWantsToCrouch = !bWantsToCrouch;
+}
+
+#pragma endregion 
