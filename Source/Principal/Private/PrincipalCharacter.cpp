@@ -138,3 +138,15 @@ void APrincipalCharacter::DoJumpEnd()
 	// signal the character to stop jumping
 	StopJumping();
 }
+
+FCollisionQueryParams APrincipalCharacter::GetIgnoreCharacterParams() const
+{
+	FCollisionQueryParams Params;
+	
+	TArray<AActor*> CharacterChildren;
+	GetAllChildActors(CharacterChildren);
+	Params.AddIgnoredActors(CharacterChildren);
+	Params.AddIgnoredActor(this);
+	
+	return Params;
+}
